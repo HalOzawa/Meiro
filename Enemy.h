@@ -18,9 +18,10 @@ public:
     void Update() override;
     void Draw() override;
     bool CheckHit(const Rect& me, const Rect& other);
-    //void YCloserMove();
-    //void XCloserMove();
-    //void XYCloserMove();
-    //void XYCloserMoveRandom();
+    void YCloserMove();
+    void XCloserMove();
+    void XYCloserMove();
+    void XYCloserMoveRandom();
+    void RightHandMove();
 };
 

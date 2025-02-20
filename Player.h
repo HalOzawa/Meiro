@@ -10,6 +10,7 @@ class Player :
 public:
 	Player();
     ~Player();
+    Point GetPos() { return pos_; }
     void Update() override;
     void Draw() override;
 	bool CheckHit(const Rect& me,const Rect& other);

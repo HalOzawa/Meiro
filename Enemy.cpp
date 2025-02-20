@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "Player.h"
 #include "./Stage.h"
 #include "globals.h"
 
@@ -65,8 +66,9 @@ void Enemy::Update()
     int cy = (pos_.y / (CHA_HEIGHT)) % 2;
     if (prgssx == 0 && prgssy == 0 && cx && cy)
     {
-		forward_ = (DIR)GetRand(3);
+		//forward_ = (DIR)GetRand(3);
         //YCloseMove();
+        RightHandMove();
 	}
 }
 
@@ -96,4 +98,107 @@ bool Enemy::CheckHit(const Rect& me, const Rect& other)
     }
 
     return false;
+}
+
+void Enemy::YCloserMove()
+{
+    Player* player = (Player*)FindGameObject<Player>();
+    if (pos_.y > player->GetPos().y)
+    {
+        forward_ = UP;
+    }
+    else if (pos_.y < player->GetPos().y)
+    {
+        forward_ = DOWN;
+    }
+}
+
+void Enemy::XCloserMove()
+{
+    Player* player = (Player*)FindGameObject<Player>();
+    if (pos_.x > player->GetPos().x)
+    {
+	    forward_ = LEFT;
+	}
+    else if (pos_.x < player->GetPos().x)
+    {
+		forward_ = RIGHT;
+	}
+}
+
+void Enemy::XYCloserMove()
+{
+    Player* player = (Player*)FindGameObject<Player>();
+    int xdis = abs(pos_.x - player->GetPos().x);
+    int ydis = abs(pos_.y - player->GetPos().y);
+    if (xdis > ydis)
+    {
+        if (pos_.x > player->GetPos().x)
+        {
+			forward_ = LEFT;
+		}
+        else if (pos_.x < player->GetPos().x)
+        {
+			forward_ = RIGHT;
+		}
+	}
+    else
+    {
+        if (pos_.y > player->GetPos().y)
+        {
+			forward_ = UP;
+		}
+        else if (pos_.y < player->GetPos().y)
+        {
+			forward_ = DOWN;
+		}
+	}
+}
+
+void Enemy::XYCloserMoveRandom()
+{
+    Player* player = (Player*)FindGameObject<Player>();
+    int xdis = abs(pos_.x - player->GetPos().x);
+    int ydis = abs(pos_.y - player->GetPos().y);
+    int rnum = GetRand(2);
+    if (rnum == 0)
+    {
+        XYCloserMove();
+    }
+    else if (rnum == 1)
+    {
+        forward_ = (DIR)GetRand(3);
+    }
+}
+
+void Enemy::RightHandMove()
+{
+    DIR myRight[4] = { RIGHT, LEFT, UP, DOWN };
+    DIR myLeft[4] = { LEFT, RIGHT, DOWN, UP };
+    Point nposF = { pos_.x + nDir[forward_].x, pos_.y + nDir[forward_].y };
+    Point nposR = { pos_.x + nDir[myRight[forward_]].x, pos_.y + nDir[myRight[forward_]].y };
+    Rect myRectF = { nposF.x, nposF.y, CHA_WIDTH, CHA_HEIGHT };
+    Rect myRectR = { nposR.x, nposR.y, CHA_WIDTH, CHA_HEIGHT };
+    Stage* stage = (Stage*)FindGameObject<Stage>();
+    bool isRightOpen = true;
+    bool isForwardOpen = true;
+    for (auto& obj : stage->GetStageRects())
+    {
+        if (CheckHit(myRectF, obj))
+        {
+            isForwardOpen = false;
+        }
+        if (CheckHit(myRectR, obj))
+        {
+			isRightOpen = false;
+		}
+    }
+    if (isRightOpen)
+    {
+        forward_ = myRight[forward_];
+    }
+    else if (isRightOpen == false && isForwardOpen == false)
+    {
+        forward_ = myLeft[forward_];
+    }
 }
