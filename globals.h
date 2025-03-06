@@ -1,9 +1,13 @@
 #pragma once
+#include <tuple>
 
 
 	struct Point
 	{
 		int x, y;
+		bool operator<(const Point& other) const {
+			return std::tie(x, y) < std::tie(other.x, other.y);
+		}
 	};
 
 	struct Pointf
@@ -24,6 +28,12 @@
 		WALL,
 		GOAL,
 		MAX_OBJECT
+	};
+
+	struct StageObj
+	{
+		STAGE_OBJ obj;
+		float weight;
 	};
 
 	enum DIR

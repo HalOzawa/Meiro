@@ -17,15 +17,16 @@ constexpr int STAGE_HEIGHT = (Screen::HEIGHT / CHA_HEIGHT) % 2 ? (Screen::HEIGHT
 class Stage :
     public GameObject
 {
-	vector<vector<STAGE_OBJ>> stageData;
+	vector<vector<StageObj>> stageData;
 	vector<Rect> stageRects;
 public:
 	Stage();
 	~Stage();
 	void Update() override;
 	void Draw() override;
-	STAGE_OBJ GetStageData(int x, int y) {return stageData[y][x];}
+	StageObj GetStageData(int x, int y) {return stageData[y][x];}
 	vector<Rect> GetStageRects() { return stageRects; }
+	vector<vector<StageObj>>& GetStageGrid() { return stageData; }
 	void setStageRects();
 };
 
