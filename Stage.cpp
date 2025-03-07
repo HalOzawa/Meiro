@@ -1,6 +1,8 @@
 #include "Stage.h"
 #include "./globals.h"
 #include <stack>
+#include <cstdlib>
+#include <ctime>
 
 namespace {
 	std::stack<Point> prStack;
@@ -48,6 +50,7 @@ namespace {
 			for (int i = 0; i < w; i++) {
 				if (i == 0 || j == 0 || i == w - 1 || j == h - 1)
 					_stage[j][i].obj = STAGE_OBJ::EMPTY;
+					//_stage[j][i].obj = STAGE_OBJ::WALL;
 				else
 					_stage[j][i].obj = STAGE_OBJ::WALL;
 			}
@@ -65,6 +68,16 @@ namespace {
 			prStack.pop();
 			DigDug(sp.x, sp.y, _stage);
 		}
+
+		srand(static_cast<unsigned int>(time(0)));
+		int numHoles = rand() % 50 + 10;
+		for (int i = 0; i < numHoles; i++)
+		{
+			int randX = rand() % (w - 2) + 1;
+			int randY = rand() % (h - 2) + 1;
+			_stage[randY][randX].obj = STAGE_OBJ::EMPTY;
+		}
+
 		for (int j = 0; j < h; j++)
 		{
 			for (int i = 0; i < w; i++)
