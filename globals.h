@@ -6,7 +6,16 @@
 	{
 		int x, y;
 		bool operator<(const Point& other) const {
-			return std::tie(x, y) < std::tie(other.x, other.y);
+			//return std::tie(x, y) < std::tie(other.x, other.y);
+
+			if (x == other.x)
+			{
+				return y < other.y;
+			}
+			return x < other.x;
+		}
+		bool operator!=(const Point& other) const {
+			return x == other.x && y == other.y;
 		}
 	};
 

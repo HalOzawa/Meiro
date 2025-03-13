@@ -61,7 +61,7 @@ void Enemy::Update()
                     pos_ = op;
                 }
                 forward_ = (DIR)GetRand(3);
-                RightHandMove();
+                //RightHandMove();
                 break;
             }
         }
@@ -74,7 +74,8 @@ void Enemy::Update()
     {
 		//forward_ = (DIR)GetRand(3);
         //YCloseMove();
-        RightHandMove();
+        //RightHandMove();
+		Dijkstra({ pos_.x / CHA_WIDTH, pos_.y / CHA_HEIGHT }, { 0, 0 });
 	}
 
     //プレイヤーとの当たり判定
@@ -190,6 +191,7 @@ void Enemy::XYCloserMoveRandom()
     }
 }
 
+//右手法
 void Enemy::RightHandMove()
 {
     DIR myRight[4] = { RIGHT, LEFT, UP, DOWN };
@@ -222,6 +224,7 @@ void Enemy::RightHandMove()
     }
 }
 
+//ダイクストラ法
 void Enemy::Dijkstra(Point sp, Point gp)
 {
     using Mdat = std::pair<int, Point>;
@@ -229,6 +232,7 @@ void Enemy::Dijkstra(Point sp, Point gp)
     dist[sp.y][sp.x] = 0;
     std::priority_queue<Mdat, std::vector<Mdat>, std::greater<Mdat>> pq;
     pq.push(Mdat(0, { sp.x, sp.y }));
+
     vector<vector<StageObj>> stageData = ((Stage*)FindGameObject<Stage>())->GetStageGrid();
 
     while (!pq.empty())
@@ -246,10 +250,36 @@ void Enemy::Dijkstra(Point sp, Point gp)
             Point np = { v.x + (int)nDir[i].x, v.y + (int)nDir[i].y };
             if(np.x < 0 || np.y < 0 || np.x >= STAGE_WIDTH || np.y >= STAGE_HEIGHT) continue;
             if (stageData[np.y][np.x].obj == STAGE_OBJ::WALL) continue;
-            if(dist[np.y][np.x] <= stageData[np.y][np.x].weight + c) continue;
-            dist[np.y][np.x] = stageData[np.y][np.x].weight + c;
-            pre[np.y][np.x] = Point({ v.x, v.y });
-            pq.push(Mdat(dist[np.y][np.x], np));
+
+            if(dist[np.y][np.x] <= stageData[np.y][np.x].weight + c);
+            {
+                dist[np.y][np.x] = stageData[np.y][np.x].weight + c;
+                pre[np.y][np.x] = Point({ v.x, v.y });
+                pq.push(Mdat(dist[np.y][np.x], np));
+            }
         }
+    }
+
+    //最短経路復元
+	Point current = gp; //ゴール地点から開始
+    while (pre[current.y][current.x] != sp)
+    {
+		current = pre[current.y][current.x];
+    }
+    if (current.x > sp.x)
+    {
+		forward_ = RIGHT;
+    }
+    else if (current.x < sp.x)
+    {
+		forward_ = LEFT;
+	}
+	else if (current.y > sp.y)
+	{
+		forward_ = DOWN;
+	}
+    else if (current.y < sp.y)
+    {
+		forward_ = UP;
     }
 }

@@ -70,8 +70,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\230114\DxLib_VC\DxLib_VC\プロジェクトに追加すべきファイル_VC用;D:\GE2A05\DxLib_VC3_24d\DxLib_VC\プロジェクトに追加すべきファイル_VC用;D:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\230114\DxLib_VC\DxLib_VC\プロジェクトに追加すべきファイル_VC用;D:\GE2A05\DxLib_VC3_24d\DxLib_VC\プロジェクトに追加すべきファイル_VC用;D:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\DxLib_VC3_24d\DxLib_VC\プロジェクトに追加すべきファイル_VC用;D:\230114\DxLib_VC\DxLib_VC\プロジェクトに追加すべきファイル_VC用;D:\GE2A05\DxLib_VC3_24d\DxLib_VC\プロジェクトに追加すべきファイル_VC用;D:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\DxLib_VC3_24d\DxLib_VC\プロジェクトに追加すべきファイル_VC用;D:\230114\DxLib_VC\DxLib_VC\プロジェクトに追加すべきファイル_VC用;D:\GE2A05\DxLib_VC3_24d\DxLib_VC\プロジェクトに追加すべきファイル_VC用;D:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>D:\230114\DxLib_VC\DxLib_VC\プロジェクトに追加すべきファイル_VC用;D:\GE2A05\DxLib_VC3_24d\DxLib_VC\プロジェクトに追加すべきファイル_VC用;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
