@@ -35,6 +35,9 @@ void Enemy::Update()
 {
     static bool stop = false;
 
+    Player* player = (Player*)FindGameObject<Player>();
+
+
     if (!stop)
     {
         Point op = pos_;
@@ -61,7 +64,7 @@ void Enemy::Update()
                     pos_ = op;
                 }
                 forward_ = (DIR)GetRand(3);
-                //RightHandMove();
+                RightHandMove();
                 break;
             }
         }
@@ -76,10 +79,10 @@ void Enemy::Update()
         //YCloseMove();
         //RightHandMove();
 		Dijkstra({ pos_.x / CHA_WIDTH, pos_.y / CHA_HEIGHT }, { 0, 0 });
+		//BFS({ pos_.x / CHA_WIDTH, pos_.y / CHA_HEIGHT }, { 0, 0 });
 	}
 
     //プレイヤーとの当たり判定
-    Player* player = (Player*)FindGameObject<Player>();
     Rect playerRect = { player->GetPos().x, player->GetPos().y, CHA_WIDTH, CHA_HEIGHT };
     Rect enemyRect = { pos_.x, pos_.y, CHA_WIDTH, CHA_HEIGHT };
     if (CheckHit(playerRect, enemyRect))
@@ -281,5 +284,60 @@ void Enemy::Dijkstra(Point sp, Point gp)
     else if (current.y < sp.y)
     {
 		forward_ = UP;
+    }
+}
+
+void Enemy::BFS(Point sp, Point gp)
+{
+    dist = vector(STAGE_HEIGHT, vector<int>(STAGE_WIDTH, INT_MAX));
+    pre = vector(STAGE_HEIGHT, vector<Point>(STAGE_WIDTH, { -1, -1 }));
+    dist[sp.y][sp.x] = 0;
+
+    std::queue<Point> q;
+    q.push(sp);
+
+    vector<vector<StageObj>> stageData = ((Stage*)FindGameObject<Stage>())->GetStageGrid();
+
+    while (!q.empty())
+    {
+        Point v = q.front();
+        q.pop();
+
+        if (v.x == gp.x && v.y == gp.y) break;//ゴールに着いたら終了
+
+        for (int i = 0; i < 4; i++)
+        {
+            Point np = { v.x + nDir[i].x, v.y + nDir[i].y };
+
+            // 範囲外または壁はスルー
+            if (np.x < 0 || np.y < 0 || np.x >= STAGE_WIDTH || np.y >= STAGE_HEIGHT) continue;
+            if (stageData[np.y][np.x].obj == STAGE_OBJ::WALL) continue;
+
+            //行ってないマスだけ更新
+            if (dist[np.y][np.x] == INT_MAX)
+            {
+                dist[np.y][np.x] = dist[v.y][v.x] + 1;
+                pre[np.y][np.x] = v;
+                q.push(np);
+            }
+        }
+    }
+
+    // 経路復元
+    path = queue<Point>(); // キューを初期化
+    Point current = gp;
+    stack<Point> reversePath;
+    while (current.x != sp.x || current.y != sp.y)
+    {
+        reversePath.push(current);
+        current = pre[current.y][current.x];
+    }
+    reversePath.push(sp); // スタート地点を追加
+
+    // キュー追加
+    while (!reversePath.empty())
+    {
+        path.push(reversePath.top());
+        reversePath.pop();
     }
 }
