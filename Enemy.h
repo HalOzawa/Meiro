@@ -13,6 +13,7 @@ class Enemy :
     public GameObject
 {
     Point pos_;
+	Point PlayerPos_;
     bool isAlive_;
     float speed_;
     Point nextPos_;
@@ -37,7 +38,7 @@ public:
 	void Dijkstra(Point sp, Point gp); // ダイクストラ法
 	void BFS(Point sp, Point gp); // 幅優先探索
 
-    int GetX() { return pos_.x; }
-    int GetY() { return pos_.y; }
+    //int GetX() { return pos_.x; }
+    //int GetY() { return pos_.y; }
 };
 

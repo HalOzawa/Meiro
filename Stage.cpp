@@ -82,6 +82,7 @@ namespace {
 		{
 			for (int i = 0; i < w; i++)
 			{
+				//_stage[j][i].weight = 1.0f;
 				if (i == 0 || j == 0 || i == w - 1 || j == h - 1)
 					_stage[j][i].obj = STAGE_OBJ::WALL;
 				continue;

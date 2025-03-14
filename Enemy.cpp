@@ -36,7 +36,8 @@ void Enemy::Update()
     static bool stop = false;
 
     Player* player = (Player*)FindGameObject<Player>();
-
+    Rect playerRect = { player->GetPos().x, player->GetPos().y, CHA_WIDTH, CHA_HEIGHT };
+    Rect enemyRect = { pos_.x, pos_.y, CHA_WIDTH, CHA_HEIGHT };
 
     if (!stop)
     {
@@ -64,7 +65,8 @@ void Enemy::Update()
                     pos_ = op;
                 }
                 forward_ = (DIR)GetRand(3);
-                RightHandMove();
+                //RightHandMove();
+				//XYCloserMove();
                 break;
             }
         }
@@ -78,13 +80,11 @@ void Enemy::Update()
 		//forward_ = (DIR)GetRand(3);
         //YCloseMove();
         //RightHandMove();
-		Dijkstra({ pos_.x / CHA_WIDTH, pos_.y / CHA_HEIGHT }, { 0, 0 });
-		//BFS({ pos_.x / CHA_WIDTH, pos_.y / CHA_HEIGHT }, { 0, 0 });
+		//Dijkstra({ pos_.x / CHA_WIDTH, pos_.y / CHA_HEIGHT }, {player->GetPos().x / CHA_WIDTH, player->GetPos().y / CHA_HEIGHT});
+		BFS({ pos_.x / CHA_WIDTH, pos_.y / CHA_HEIGHT }, {player->GetPos().x / CHA_WIDTH, player->GetPos().y / CHA_HEIGHT});
 	}
 
     //プレイヤーとの当たり判定
-    Rect playerRect = { player->GetPos().x, player->GetPos().y, CHA_WIDTH, CHA_HEIGHT };
-    Rect enemyRect = { pos_.x, pos_.y, CHA_WIDTH, CHA_HEIGHT };
     if (CheckHit(playerRect, enemyRect))
     {
 		stop = true;
@@ -230,18 +230,20 @@ void Enemy::RightHandMove()
 //ダイクストラ法
 void Enemy::Dijkstra(Point sp, Point gp)
 {
-    using Mdat = std::pair<int, Point>;
 
+
+    using Mdat = std::pair<int, Point>;
     dist[sp.y][sp.x] = 0;
     std::priority_queue<Mdat, std::vector<Mdat>, std::greater<Mdat>> pq;
     pq.push(Mdat(0, { sp.x, sp.y }));
 
-    vector<vector<StageObj>> stageData = ((Stage*)FindGameObject<Stage>())->GetStageGrid();
+    vector<vector<StageObj>>stageData = ((Stage*)FindGameObject<Stage>())->GetStageGrid();
 
     while (!pq.empty())
     {
         Mdat p = pq.top();
         pq.pop();
+
 
         //Rect{ (int)p.second.x * STAGE_WIDTH, (int)p.second.y * BLOCK_SIZE.y, BLOCK_SIZE }.draw(Palette::Red);
         //getchar();
@@ -251,42 +253,46 @@ void Enemy::Dijkstra(Point sp, Point gp)
         for (int i = 0; i < 4; i++)
         {
             Point np = { v.x + (int)nDir[i].x, v.y + (int)nDir[i].y };
-            if(np.x < 0 || np.y < 0 || np.x >= STAGE_WIDTH || np.y >= STAGE_HEIGHT) continue;
+
+            if (np.x < 0 || np.y < 0 || np.x >= STAGE_WIDTH || np.y >= STAGE_HEIGHT) continue;
             if (stageData[np.y][np.x].obj == STAGE_OBJ::WALL) continue;
 
-            if(dist[np.y][np.x] <= stageData[np.y][np.x].weight + c);
+            int newDist = c + stageData[np.y][np.x].weight;
+            if (dist[np.y][np.x] > newDist)
             {
-                dist[np.y][np.x] = stageData[np.y][np.x].weight + c;
-                pre[np.y][np.x] = Point({ v.x, v.y });
-                pq.push(Mdat(dist[np.y][np.x], np));
+                dist[np.y][np.x] = newDist;
+                pre[np.y][np.x] = v;
+                pq.push(Mdat(newDist, np));
             }
         }
     }
-
-    //最短経路復元
-	Point current = gp; //ゴール地点から開始
+    
+	//最短経路復元
+    Point current = gp;
     while (pre[current.y][current.x] != sp)
     {
-		current = pre[current.y][current.x];
+        current = pre[current.y][current.x];
     }
+
     if (current.x > sp.x)
     {
-		forward_ = RIGHT;
+        forward_ = RIGHT;
     }
     else if (current.x < sp.x)
     {
-		forward_ = LEFT;
-	}
-	else if (current.y > sp.y)
-	{
-		forward_ = DOWN;
-	}
+        forward_ = LEFT;
+    }
+    else if (current.y > sp.y)
+    {
+        forward_ = DOWN;
+    }
     else if (current.y < sp.y)
     {
-		forward_ = UP;
+        forward_ = UP;
     }
 }
 
+//幅優先探索
 void Enemy::BFS(Point sp, Point gp)
 {
     dist = vector(STAGE_HEIGHT, vector<int>(STAGE_WIDTH, INT_MAX));
